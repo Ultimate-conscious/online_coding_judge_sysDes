@@ -20,18 +20,12 @@ const httpServer = app.listen(8080, () => {
     console.log("Server is running on port 8080");
 });
 const wss = new ws_1.WebSocket.Server({ server: httpServer });
-function getRedisClient() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const client = yield (0, redis_1.createClient)();
-        return client;
-    });
-}
+const client = (0, redis_1.createClient)();
 wss.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* () {
+    yield client.connect();
     ws.on('error', (err) => {
         console.log("An error occured on the server");
     });
-    const client = yield getRedisClient();
-    client.connect();
     ws.on("message", (data, isBinary) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(JSON.parse(data.toString()));
         yield client.lPush("submissions", JSON.stringify(JSON.parse(data.toString())));

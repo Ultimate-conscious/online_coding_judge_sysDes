@@ -11,18 +11,15 @@ const httpServer = app.listen(8080, () => {
 
 const wss = new WebSocket.Server({ server: httpServer });
 
-async function getRedisClient(){
-    const client = await createClient()
-    return client;
-}
+const client = createClient();
 
 wss.on("connection", async(ws) => {
+
+    await client.connect();
+
     ws.on('error', (err) => {
         console.log("An error occured on the server");
     });
-    
-    const client = await getRedisClient();
-    client.connect();
 
     ws.on("message",async (data,isBinary) => {
 
